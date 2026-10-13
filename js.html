@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天練習的Java script - 質感咖啡選物所</title>
+    <style>
+        /* 基礎全站樣式（專業大地色系：燕麥白與溫潤木質調） */
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background-color: #f7f4ef;
+            color: #4a3b32;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.5s ease;
+        }
+
+        /* 頂部導覽列 */
+        header {
+            background-color: #ffffff;
+            border-bottom: 2px solid #e6d5c3;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(101, 67, 33, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #654321;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-cart-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* 頁面主要標題區 */
+        .hero-section {
+            text-align: center;
+            padding: 40px 20px 20px 20px;
+        }
+
+        .hero-section h1 {
+            color: #5c4033;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .hero-section p {
+            color: #8c7365;
+            font-size: 16px;
+        }
+
+        /* 商品列表外框（10樣商品展示網格） */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            padding: 20px 40px 60px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 單個商品卡片 */
+        .product-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(101, 67, 33, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(101, 67, 33, 0.15);
+        }
+
+        .product-img-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            background-color: #e6d5c3;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.08);
+        }
+
+        .product-info {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 17px;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            color: #5c4033;
+        }
+
+        .product-desc {
+            font-size: 13px;
+            color: #7a6b63;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 15px;
+        }
+
+        /* 咖啡色購物車按鈕 */
+        .cart-button {
+            background-color: #8B4513;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(139, 69, 19, 0.3);
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .cart-button:hover {
+            background-color: #A0522D;
+        }
+
+        .cart-button:active {
+            transform: scale(0.98);
+        }
+
+        /* 頂部查看購物車按鈕 */
+        .view-cart-btn {
+            background-color: #654321;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .view-cart-btn:hover {
+            background-color: #4a3b32;
+        }
+
+        /* 酷炫特效：頁面劇烈搖晃動畫 */
+        @keyframes screen-shake {
+            0% { transform: translate(3px, 3px) rotate(0deg); }
+            20% { transform: translate(-5px, -3px) rotate(-1.5deg); }
+            40% { transform: translate(5px, 3px) rotate(1.5deg); }
+            60% { transform: translate(-3px, 5px) rotate(0deg); }
+            80% { transform: translate(3px, -3px) rotate(-1.5deg); }
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+
+        .shake-body {
+            animation: screen-shake 0.4s ease;
+        }
+
+        /* 炫酷互動特效：中央彈出的沖泡咖啡動畫視窗 */
+        #coffee-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(74, 59, 50, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .coffee-brew-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 3px solid #d4b595;
+            animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .coffee-icon-anim {
+            font-size: 60px;
+            margin-bottom: 15px;
+            animation: bounceBrew 1s infinite alternate;
+        }
+
+        @keyframes bounceBrew {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-12px) scale(1.1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.6); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* 購物車詳細內容彈窗 */
+        #cart-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1500;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 450px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #654321;
+        }
+
+        .close-modal {
+            background-color: #ccc;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 頂部導覽列 -->
+    <header>
+        <div class="logo">☕ 質感咖啡選物所</div>
+        <div class="nav-cart-info">
+            <span id="cart-summary" style="font-weight: bold; color: #5c4033;">購物車：0 件 ($0)</span>
+            <button class="view-cart-btn" onclick="openCartModal()">查看購物車</button>
+        </div>
+    </header>
+
+    <!-- 標題說明區 -->
+    <div class="hero-section">
+        <h1>今天練習的 Java Script</h1>
+        <p>探索 10 款精選職人物件，點擊加入購物車體驗沉浸式沖泡特效！</p>
+    </div>
+
+    <!-- 10樣精選商品展示網格 -->
+    <div class="product-grid">
+        
+        <!-- 商品 1 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80" alt="耶加雪菲">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">衣索比亞 耶加雪菲</h3>
+                <p class="product-desc">迷人花香與柑橘果酸，口感清爽明亮。</p>
+                <div class="product-price">$450</div>
+                <button class="cart-button" onclick="addToCart('衣索比亞 耶加雪菲', 450)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 2 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80" alt="手沖壺">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">不鏽鋼細口手沖壺</h3>
+                <p class="product-desc">極細出水孔設計，完美掌控穩定水流。</p>
+                <div class="product-price">$1,280</div>
+                <button class="cart-button" onclick="addToCart('不鏽鋼細口手沖壺', 1280)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 3 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1577968897966-3d4325b36b61?auto=format&fit=crop&w=600&q=80" alt="馬克杯">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">手作溫潤陶瓷馬克杯</h3>
+                <p class="product-desc">厚實手感，絕佳保溫，陪伴每個午後時光。</p>
+                <div class="product-price">$380</div>
+                <button class="cart-button" onclick="addToCart('手作溫潤陶瓷馬克杯', 380)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 4 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1589396183860-2646b5a1dfc2?auto=format&fit=crop&w=600&q=80" alt="磨豆機">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">專業手搖不鏽鋼磨豆機</h3>
+                <p class="product-desc">陶瓷磨芯不發熱，均勻保留咖啡原始香氣。</p>
+                <div class="product-price">$890</div>
+                <button class="cart-button" onclick="addToCart('專業手搖不鏽鋼磨豆機', 890)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 5 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=600&q=80" alt="義式咖啡豆">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">義式濃郁黃金烘焙豆</h3>
+                <p class="product-desc">厚實堅果與黑巧克力尾韻，油脂極度豐富。</p>
+                <div class="product-price">$520</div>
+                <button class="cart-button" onclick="addToCart('義式濃郁黃金烘焙豆', 520)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 6 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80" alt="濾杯">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">日本扇形V60樹脂濾杯</h3>
+                <p class="product-desc">導流肋骨設計，萃取流暢無雜味。</p>
+                <div class="product-price">$250</div>
+                <button class="cart-button" onclick="addToCart('日本扇形V60樹脂濾杯', 250)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 7 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1507133750043-495f57cf6f5d?auto=format&fit=crop&w=600&q=80" alt="濾紙">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">原木原色手沖專用濾紙</h3>
+                <p class="product-desc">無漂白無異味，完美過濾咖啡細末。</p>
+                <div class="product-price">$160</div>
+                <button class="cart-button" onclick="addToCart('原木原色手沖專用濾紙', 160)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 8 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=600&q=80" alt="電子秤">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">智慧計時咖啡電子秤</h3>
+                <p class="product-desc">精準至 0.1 克並附帶萃取計時功能。</p>
+                <div class="product-price">$680</div>
+                <button class="cart-button" onclick="addToCart('智慧計時咖啡電子秤', 680)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 9 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80" alt="分享壺">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">耐熱玻璃咖啡分享壺</h3>
+                <p class="product-desc">高硼矽耐熱玻璃，晶瑩剔透刻度精準。</p>
+                <div class="product-price">$420</div>
+                <button class="cart-button" onclick="addToCart('耐熱玻璃咖啡分享壺', 420)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+        <!-- 商品 10 -->
+        <div class="product-card">
+            <div class="product-img-container">
+                <img class="product-img" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80" alt="隨行保溫杯">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">真空不鏽鋼咖啡隨行杯</h3>
+                <p class="product-desc">長效保溫保冰，通勤外出的最佳良伴。</p>
+                <div class="product-price">$590</div>
+                <button class="cart-button" onclick="addToCart('真空不鏽鋼咖啡隨行杯', 590)">🛒 加入購物車</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 酷炫特效：按下購物車跳出的「沖泡咖啡視覺動畫彈窗」 -->
+    <div id="coffee-popup-overlay">
+        <div class="coffee-brew-box">
+            <div class="coffee-icon-anim">☕✨</div>
+            <h2 style="color: #654321; margin: 10px 0;">正在為您現沖精品咖啡...</h2>
+            <p id="popup-product-text" style="color: #8c7365; font-size: 15px;">成功加入購物車！</p>
+        </div>
+    </div>
+
+    <!-- 購物車詳細內容彈窗 -->
+    <div id="cart-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeCartModal()">關閉</button>
+            <h3>📦 您的購物車清單</h3>
+            <ul id="cart-items-list" style="padding-left: 20px; line-height: 1.8;">
+                <li>目前購物車是空的喔！</li>
+            </ul>
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+            <p id="modal-total-price" style="font-weight: bold; text-align: right; font-size: 16px; color: #8B4513;">總計：$0</p>
+            <button class="cart-button" onclick="checkout()" style="margin-top: 10px;">前往結帳</button>
+        </div>
+    </div>
+
+    <script>
+        // 儲存購物車商品的陣列
+        let cart = [];
+
+        // 加入購物車主函式
+        function addToCart(productName, price) {
+            // 1. 將商品加入陣列
+            cart.push({ name: productName, price: price });
+
+            // 2. 更新上方導覽列的購物車總計
+            updateCartSummary();
+
+            // 3. 觸發畫面劇烈搖晃特效
+            triggerShakeEffect();
+
+            // 4. 彈出炫酷的「沖泡咖啡動態圖樣」彈窗
+            showBrewPopup(productName);
+        }
+
+        // 觸發畫面劇烈搖晃
+        function triggerShakeEffect() {
+            document.body.classList.add('shake-body');
+            setTimeout(function(){
+                document.body.classList.remove('shake-body');
+            }, 400);
+        }
+
+        // 顯示沖泡咖啡特效彈窗
+        function showBrewPopup(productName) {
+            let overlay = document.getElementById('coffee-popup-overlay');
+            let textEl = document.getElementById('popup-product-text');
+            textEl.innerText = "已成功將「" + productName + "」加入購物車！";
+            overlay.style.display = "flex";
+
+            // 1.8秒後自動關閉特效彈窗，並跳出你原本想要的歡迎彈窗
+            setTimeout(function(){
+                overlay.style.display = "none";
+                alert("歡迎您的到來!!happy!!");
+            }, 1800);
+        }
+
+        // 更新頂部導覽列顯示的數量與總金額
+        function updateCartSummary() {
+            let totalCount = cart.length;
+            let totalPrice = 0;
+            for(let i = 0; i < cart.length; i++) {
+                totalPrice += cart[i].price;
+            }
+            document.getElementById('cart-summary').innerText = "購物車：" + totalCount + " 件 ($" + totalPrice + ")";
+        }
+
+        // 打開購物車彈窗
+        function openCartModal() {
+            let listElement = document.getElementById('cart-items-list');
+            let totalElement = document.getElementById('modal-total-price');
+            
+            listElement.innerHTML = ""; // 清空舊內容
+            
+            if (cart.length === 0) {
+                listElement.innerHTML = "<li>目前購物車是空的喔！</li>";
+                totalElement.innerText = "總計：$0";
+            } else {
+                let totalPrice = 0;
+                for(let i = 0; i < cart.length; i++) {
+                    let li = document.createElement('li');
+                    li.innerText = cart[i].name + " - $" + cart[i].price;
+                    listElement.appendChild(li);
+                    totalPrice += cart[i].price;
+                }
+                totalElement.innerText = "總計：$" + totalPrice;
+            }
+
+            document.getElementById('cart-modal').style.display = "flex";
+        }
+
+        // 關閉購物車彈窗
+        function closeCartModal() {
+            document.getElementById('cart-modal').style.display = "none";
+        }
+
+        // 結帳功能
+        function checkout() {
+            if (cart.length === 0) {
+                alert("您的購物車是空的，無法結帳喔！");
+                return;
+            }
+            alert("感謝您的購買！結帳成功！🎉 happy!!");
+            cart = []; // 清空購物車
+            updateCartSummary();
+            closeCartModal();
+        }
+    </script>
+</body>
+</html>
